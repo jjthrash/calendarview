@@ -17,6 +17,10 @@
 //   www.dynarch.com/projects/calendar
 //
 
+
+// This branch ( git://github.com/leikind/calendarview.git ) adds time - two dropdowns for 
+// hours and minutes, by Yuri Leikind (yuri dot leikind at gmail.com )
+
 var Calendar = Class.create()
 
 //------------------------------------------------------------------------------
@@ -72,6 +76,9 @@ Calendar._checkCalendar = function(event) {
 
 Calendar.handleMouseDownEvent = function(event)
 {
+  if (event.element().type == 'select-one'){ // ignore select elements - not escaping this in Safari leaves select boxes non-functional
+    return true
+  } 
   Event.observe(document, 'mouseup', Calendar.handleMouseUpEvent)
   Event.stop(event)
 }
@@ -183,10 +190,7 @@ Calendar.defaultSelectHandler = function(calendar)
   if (!calendar.dateField) return false
 
   // Update dateField value
-  if (calendar.dateField.tagName == 'DIV')
-    Element.update(calendar.dateField, calendar.date.print(calendar.dateFormat))
-  else if (calendar.dateField.tagName == 'INPUT') {
-    calendar.dateField.value = calendar.date.print(calendar.dateFormat) }
+  calendar.updateOuterField()
 
   // Trigger the onchange callback on the dateField, if one has been defined
   if (typeof calendar.dateField.onchange == 'function')
@@ -222,10 +226,8 @@ Calendar.setup = function(params)
   // In-Page Calendar
   if (params.parentElement)
   {
-    var calendar = new Calendar(params.parentElement)
+    var calendar = new Calendar(params.parentElement, params.withTime, params.dateFormat)
     calendar.setSelectHandler(params.selectHandler || Calendar.defaultSelectHandler)
-    if (params.dateFormat)
-      calendar.setDateFormat(params.dateFormat)
     if (params.dateField) {
       calendar.setDateField(params.dateField)
       calendar.parseDate(calendar.dateField.innerHTML || calendar.dateField.value)
@@ -243,11 +245,9 @@ Calendar.setup = function(params)
   {
     var triggerElement = $(params.triggerElement || params.dateField)
     triggerElement.onclick = function() {
-      var calendar = new Calendar()
+      var calendar = new Calendar(null, params.withTime, params.dateFormat)
       calendar.setSelectHandler(params.selectHandler || Calendar.defaultSelectHandler)
       calendar.setCloseHandler(params.closeHandler || Calendar.defaultCloseHandler)
-      if (params.dateFormat)
-        calendar.setDateFormat(params.dateFormat)
       if (params.dateField) {
         calendar.setDateField(params.dateField)
         calendar.parseDate(calendar.dateField.innerHTML || calendar.dateField.value)
@@ -280,6 +280,7 @@ Calendar.prototype = {
   minYear: 1900,
   maxYear: 2100,
   dateFormat: '%Y-%m-%d',
+  dateTimeFormat: '%Y-%m-%d %H:%M',
 
   // Dates
   date: new Date(),
@@ -296,15 +297,21 @@ Calendar.prototype = {
   // Initialize
   //----------------------------------------------------------------------------
 
-  initialize: function(parent)
+  initialize: function(parent, withTime, dateFormat)
   {
     if (parent)
-      this.create($(parent))
+      this.create($(parent), withTime, dateFormat)
     else
-      this.create()
+      this.create(null, withTime, dateFormat)
   },
 
-
+  updateOuterField: function(){
+    if (this.dateField.tagName == 'DIV')
+      this.dateField.update(this.date.print(this.dateFormat))
+    else if (this.dateField.tagName == 'INPUT') {
+      this.dateField.value = this.date.print(this.dateFormat) }
+  },
+  
 
   //----------------------------------------------------------------------------
   // Update / (Re)initialize Calendar
@@ -319,7 +326,9 @@ Calendar.prototype = {
     var thisDay    = today.getDate()
     var month      = date.getMonth();
     var dayOfMonth = date.getDate();
-
+    var hour       = date.getHours();
+    var minute     = date.getMinutes();
+    
     // Ensure date is within the defined range
     if (date.getFullYear() < this.minYear)
       date.setFullYear(this.minYear)
@@ -376,6 +385,16 @@ Calendar.prototype = {
       }
     )
 
+    Element.getElementsBySelector(this.container, 'tfoot tr td select').each(
+      function(sel){
+        if(sel.name == 'hourSelect'){
+          sel.selectedIndex = hour
+        }else if(sel.name == 'minuteSelect'){
+          sel.selectedIndex = minute
+        }
+      }
+    )
+
     this.container.getElementsBySelector('td.title')[0].update(
       Calendar.MONTH_NAMES[month] + ' ' + this.date.getFullYear()
     )
@@ -387,8 +406,20 @@ Calendar.prototype = {
   // Create/Draw the Calendar HTML Elements
   //----------------------------------------------------------------------------
 
-  create: function(parent)
+  create: function(parent, withTime, dateFormat)
   {
+    this.withTime = withTime
+
+    if (dateFormat){
+      this.dateFormat = dateFormat
+    }else{
+      if(this.withTime){
+        this.dateFormat = Calendar.prototype.dateTimeFormat
+      }else{
+        this.dateFormat = Calendar.prototype.dateFormat
+      }
+    }
+    
 
     // If no parent was specified, assume that we are creating a popup calendar.
     if (!parent) {
@@ -440,6 +471,43 @@ Calendar.prototype = {
         cell = row.appendChild(new Element('td'))
         cell.calendar = this
       }
+    }
+
+    // Time Placeholder
+    if (this.withTime){
+      var tfoot = table.appendChild(new Element('tfoot'))
+      row = tfoot.appendChild(new Element('tr'))
+      cell = row.appendChild(new Element('td', { colSpan: 7 }))
+      cell.addClassName('time')
+      var hourSelect = cell.appendChild(new Element('select', { name : 'hourSelect'}))
+      for (var i = 0; i < 24; i++) {
+        hourSelect.appendChild(new Element('option', {value : i}).update(i))
+      }
+    
+      cell.appendChild(new Element('span')).update(' : ')
+    
+      var minuteSelect = cell.appendChild(new Element('select', { name : 'minuteSelect'}))
+      for (var i = 0; i < 60; i++) {
+        minuteSelect.appendChild(new Element('option', {value : i}).update(i))
+      }
+      
+      hourSelect.observe('change', function(event){
+        selectedIndex = event.element().selectedIndex
+        if (selectedIndex){
+          this.date.setHours(selectedIndex);
+          this.updateOuterField();
+        }
+      }.bind(this))
+
+      minuteSelect.observe('change', function(event){
+        selectedIndex = event.element().selectedIndex
+        if (selectedIndex){
+          this.date.setMinutes(selectedIndex)
+          this.updateOuterField();
+        }
+      }.bind(this))
+
+      
     }
 
     // Calendar Container (div)
@@ -570,10 +638,10 @@ Calendar.prototype = {
       this.update(date)
   },
 
-  setDateFormat: function(format)
-  {
-    this.dateFormat = format
-  },
+  // setDateFormat: function(format)
+  // {
+  //   this.dateFormat = format
+  // },
 
   setDateField: function(field)
   {
@@ -639,6 +707,8 @@ Date.WEEK          =  7 * Date.DAY
 
 // Parses Date
 Date.parseDate = function(str, fmt) {
+  str = str.strip()
+  
   var today = new Date();
   var y     = 0;
   var m     = -1;

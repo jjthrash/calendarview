@@ -38,17 +38,20 @@
       function setupCalendars() {
         // Embedded Calendar
         Calendar.setup(
-          {
-            dateField: 'embeddedDateField',
-            parentElement: 'embeddedCalendar'
-          }
-        )
+           {
+        
+             dateField: 'embeddedDateField',
+             parentElement: 'embeddedCalendar',
+             withTime: true
+           }
+         )
 
         // Popup Calendar
         Calendar.setup(
           {
-            dateField: 'popupDateField',
-            triggerElement: 'popupDateField'
+            dateField: 'popupDateDate',
+            triggerElement: 'popupDateField',
+            withTime: true
           }
         )
       }
@@ -70,6 +73,8 @@
           <div id="embeddedDateField" class="dateField">
             Select Date
           </div>
+          
+          
           <br />
         </div>
       </div>
@@ -83,6 +88,10 @@
           <div id="popupDateField" class="dateField" style="margin-top: 160px">
             Show Calendar
           </div>
+          <div id="popupDateDate" class="dateField" style="margin-top: 160px">
+            2009-01-2 14:15
+          </div>
+          
         </div>
       </div>
     </div>
