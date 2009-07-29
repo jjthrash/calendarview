@@ -132,7 +132,7 @@ Calendar.handleMouseUpEvent = function(event)
       // Previous Year
       case Calendar.NAV_PREVIOUS_YEAR:
         if (year > calendar.minYear)
-          date.setFullYear(year - 1)
+          date.__setFullYear(year - 1)
         break
 
       // Previous Month
@@ -141,7 +141,7 @@ Calendar.handleMouseUpEvent = function(event)
           setMonth(mon - 1)
         }
         else if (year-- > calendar.minYear) {
-          date.setFullYear(year)
+          date.__setFullYear(year)
           setMonth(11)
         }
         break
@@ -156,7 +156,7 @@ Calendar.handleMouseUpEvent = function(event)
           setMonth(mon + 1)
         }
         else if (year < calendar.maxYear) {
-          date.setFullYear(year + 1)
+          date.__setFullYear(year + 1)
           setMonth(0)
         }
         break
@@ -164,7 +164,7 @@ Calendar.handleMouseUpEvent = function(event)
       // Next Year
       case Calendar.NAV_NEXT_YEAR:
         if (year < calendar.maxYear)
-          date.setFullYear(year + 1)
+          date.__setFullYear(year + 1)
         break
 
     }
@@ -212,7 +212,6 @@ Calendar.defaultCloseHandler = function(calendar)
 
 Calendar.setup = function(params)
 {
-
   function param_default(name, def) {
     if (!params[name]) params[name] = def
   }
@@ -243,6 +242,7 @@ Calendar.setup = function(params)
   // multiple calendars on the same page.
   else
   {
+
     var triggerElement = $(params.triggerElement || params.dateField)
     triggerElement.onclick = function() {
       var calendar = new Calendar(null, params.withTime, params.dateFormat)
@@ -331,9 +331,9 @@ Calendar.prototype = {
     
     // Ensure date is within the defined range
     if (date.getFullYear() < this.minYear)
-      date.setFullYear(this.minYear)
+      date.__setFullYear(this.minYear)
     else if (date.getFullYear() > this.maxYear)
-      date.setFullYear(this.maxYear)
+      date.__setFullYear(this.maxYear)
 
     this.date = new Date(date)
 
@@ -582,15 +582,17 @@ Calendar.prototype = {
   // Shows the calendar at the given absolute position
   showAt: function (x, y)
   {
-    this.container.setStyle({ left: x + 'px', top: y + 'px' })
-    this.show()
+    this.container.setStyle({ left: x + 'px', top: y + 'px' });
+    this.show();
   },
 
   // Shows the Calendar at the coordinates of the provided element
   showAtElement: function(element)
   {
-    var pos = Position.cumulativeOffset(element)
-    this.showAt(pos[0], pos[1])
+    var pos = Position.cumulativeOffset(element);
+    
+    this.container.show();
+    this.showAt(pos[0], pos[1] + (this.container.offsetHeight * 0.75))
   },
 
   // Hides the Calendar
@@ -840,7 +842,7 @@ Date.prototype.equalsTo = function(date) {
 Date.prototype.setDateOnly = function(date) {
   var tmp = new Date(date);
   this.setDate(1);
-  this.setFullYear(tmp.getFullYear());
+  this.__setFullYear(tmp.getFullYear());
   this.setMonth(tmp.getMonth());
   this.setDate(tmp.getDate());
 };
@@ -899,11 +901,11 @@ Date.prototype.print = function (str) {
   return str.gsub(/%./, function(match) { return s[match] || match });
 };
 
-Date.prototype.__msh_oldSetFullYear = Date.prototype.setFullYear;
-Date.prototype.setFullYear = function(y) {
+
+Date.prototype.__setFullYear = function(y) {
   var d = new Date(this);
-  d.__msh_oldSetFullYear(y);
+  d.setFullYear(y);
   if (d.getMonth() != this.getMonth())
     this.setDate(28);
-  this.__msh_oldSetFullYear(y);
+  this.setFullYear(y);
 }
