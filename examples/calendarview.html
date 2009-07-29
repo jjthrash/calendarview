@@ -36,24 +36,20 @@
     <script src="../javascripts/calendarview.js"></script>
     <script>
       function setupCalendars() {
+
         // Embedded Calendar
-        Calendar.setup(
-           {
-        
-             dateField: 'embeddedDateField',
-             parentElement: 'embeddedCalendar',
-             withTime: true
-           }
-         )
+        new Calendar({
+           dateField: 'embeddedDateField',
+           parentElement: 'embeddedCalendar',
+           withTime: true
+        });
 
         // Popup Calendar
-        Calendar.setup(
-          {
+        new Calendar({
             dateField: 'popupDateDate',
             triggerElement: 'popupDateField',
             withTime: true
-          }
-        )
+        });
       }
 
       Event.observe(window, 'load', function() { setupCalendars() })
