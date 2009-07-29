@@ -20,7 +20,10 @@
 
 /* This branch by Yuri Leikind ( git://github.com/leikind/calendarview.git ) adds the following features/changes:
 
-* Time for dealing with two dropdowns for hours and minutes,  (yuri dot leikind at gmail.com )
+* Time for dealing with two dropdowns for hours and minutes
+* Draggable popup calendars
+* Close button
+* Many popup calendars on page
 * Refactoring, cleaner OO design : 
   * Getting rid of things like 
       Calendar.prototype = {
@@ -52,14 +55,16 @@ var Calendar = Class.create({
   isPopup: true,
 
   initialize: function(params){
-    
-    parentElement  = params.parentElement  || null; // just get rid of indefined 'values' :)
-    withTime       = params.withTime       || null;
-    dateFormat     = params.dateFormat     || null;
-    dateField      = params.dateField      || null;
-    triggerElement = params.triggerElement || null;
-    closeHandler   = params.closeHandler   || null;
-    selectHandler  = params.selectHandler  || null;    
+                                               
+    parentElement        = params.parentElement        || null; // just getting rid of indefined 'values' :)
+    withTime             = params.withTime             || null;
+    dateFormat           = params.dateFormat           || null;
+    dateField            = params.dateField            || null;
+    triggerElement       = params.triggerElement       || null;
+    closeHandler         = params.closeHandler         || null;
+    selectHandler        = params.selectHandler        || null;
+    this.hideOnClickOnDay     = params.hideOnClickOnDay     || false;
+    this.hideOnClickElsewhere = params.hideOnClickElsewhere || false;
     
     if (parentElement){
       this.parentElement = $(parentElement);
@@ -114,6 +119,7 @@ var Calendar = Class.create({
       parent = document.getElementsByTagName('body')[0];
       this.isPopup = true;
     }
+    
 
     // Calendar Table
     var table = new Element('table')
@@ -123,14 +129,41 @@ var Calendar = Class.create({
     table.appendChild(thead)
 
     // Title Placeholder
-    var row  = new Element('tr')
-    var cell = new Element('td', { colSpan: 7 } )
-    cell.addClassName('title')
-    row.appendChild(cell)
-    thead.appendChild(row)
+    var firstRow  = new Element('tr');
+    
+    
+    if (this.isPopup){
+      var cell = new Element('td');
+      cell.addClassName('draggableHandler');
+      firstRow.appendChild(cell);
+      
+      cell = new Element('td', { colSpan: 5 });
+      cell.addClassName('title' );
+      cell.addClassName('draggableHandler');
+      firstRow.appendChild(cell);
+
+      cell = new Element('td');
+      cell.addClassName('closeButton');
+      firstRow.appendChild(cell);
+      cell.update('x');
+      
+      cell.observe('mousedown', function(){
+        this.hide();
+      }.bind(this));
+      
+      
+      
+    }else{
+      var cell = new Element('td', { colSpan: 7 } );
+      firstRow.appendChild(cell);      
+    }
+    
+    cell.addClassName('title');
+
+    thead.appendChild(firstRow);
 
     // Calendar Navigation
-    row = new Element('tr')
+    var row = new Element('tr')
     this._drawButtonCell(row, '&#x00ab;', 1, Calendar.NAV_PREVIOUS_YEAR)
     this._drawButtonCell(row, '&#x2039;', 1, Calendar.NAV_PREVIOUS_MONTH)
     this._drawButtonCell(row, 'Today',    3, Calendar.NAV_TODAY)
@@ -212,6 +245,10 @@ var Calendar = Class.create({
 
     // Append to parent element
     parent.appendChild(this.container)
+    
+    if (this.isPopup){
+      new Draggable(table, {handle : firstRow });
+    }
     
   },
 
@@ -351,8 +388,10 @@ var Calendar = Class.create({
   show: function(){
     this.container.show()
     if (this.isPopup) {
-      window._popupCalendar = this
-      Event.observe(document, 'mousedown', Calendar._checkCalendar)
+      window._popupCalendar = this;
+      if (this.hideOnClickElsewhere){
+        document.observe('mousedown', Calendar._checkCalendar);
+      }
     }
   },
 
@@ -367,7 +406,7 @@ var Calendar = Class.create({
     var pos = Position.cumulativeOffset(element);
     
     this.container.show();
-    this.showAt(pos[0], pos[1] );//+ (this.container.offsetHeight * 0.75))
+    this.showAt(pos[0], pos[1]  + (this.container.offsetHeight * 0.75));
   },
 
   // Hides the Calendar
@@ -444,9 +483,9 @@ Calendar.NAV_NEXT_YEAR      =  2;
 // calendar this function closes it.
 Calendar._checkCalendar = function(event) {
   if (!window._popupCalendar)
-    return false
+    return false;
   if (Element.descendantOf(Event.element(event), window._popupCalendar.container))
-    return
+    return;
   window._popupCalendar.callCloseHandler()
   return Event.stop(event)
 }
@@ -572,7 +611,9 @@ Calendar.defaultSelectHandler = function(calendar){
 }
 
 Calendar.defaultCloseHandler = function(calendar){
-  calendar.hide();
+  if (calendar.hideOnClickOnDay){
+    calendar.hide();
+  }
   calendar.shouldClose = false;
 }
 

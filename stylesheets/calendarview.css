@@ -57,6 +57,14 @@ div.calendar td.button:hover
   cursor: pointer;
 }
 
+
+div.calendar tr td.closeButton:hover
+{
+  background-color: #34ABFA;
+  cursor: pointer;
+}
+
+
 div.calendar tr.days td:active
 div.calendar td.button:active
 {
@@ -79,4 +87,8 @@ div.calendar tr.days td.today
 div.calendar tr.days td.otherDay
 {
   color: #bbb;
+}
+
+div.calendar .draggableHandler{
+  cursor: move;
 }

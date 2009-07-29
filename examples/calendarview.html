@@ -27,12 +27,14 @@
         margin-right: auto;
         text-align: center;
       }
-      div#popupDateField:hover {
+      div.popupLauncher:hover {
         background-color: #cde;
         cursor: pointer;
       }
     </style>
     <script src="../javascripts/prototype.js"></script>
+    <script src="../javascripts/effects.js"></script>
+    <script src="../javascripts/dragdrop.js"></script>
     <script src="../javascripts/calendarview.js"></script>
     <script>
       function setupCalendars() {
@@ -50,6 +52,20 @@
             triggerElement: 'popupDateField',
             withTime: true
         });
+        
+        new Calendar({
+            dateField: 'popupDateDate2',
+            triggerElement: 'popupDateField2',
+            withTime: false
+        });
+
+        new Calendar({
+            dateField: 'popupDateDate3',
+            triggerElement: 'popupDateField3',
+            withTime: true,
+            hideOnClickOnDay : true
+        });
+        
       }
 
       Event.observe(window, 'load', function() { setupCalendars() })
@@ -60,7 +76,7 @@
     <div style="float: left; width: 50%">
       <div style="height: 400px; background-color: #efefef; padding: 10px; -webkit-border-radius: 12px; -moz-border-radius: 12px; margin-right: 10px">
         <h3 style="text-align: center; background-color: white; -webkit-border-radius: 10px; -moz-border-radius: 10px; margin-top: 0px; margin-bottom: 20px; padding: 8px">
-          Embedded Calendar
+          Embedded Calendar with time
         </h3>
         <div id="embeddedExample" style="">
           <div id="embeddedCalendar" style="margin-left: auto; margin-right: auto">
@@ -69,25 +85,62 @@
           <div id="embeddedDateField" class="dateField">
             Select Date
           </div>
-          
-          
           <br />
         </div>
       </div>
     </div>
+
     <div style="float: right; width: 50%">
       <div style="height: 400px; background-color: #efefef; padding: 10px; -webkit-border-radius: 12px; -moz-border-radius: 12px; margin-left: 10px">
         <h3 style="text-align: center; background-color: white; -webkit-border-radius: 10px; -moz-border-radius: 10px; margin-top: 0px; margin-bottom: 20px; padding: 8px">
           Popup Calendar
         </h3>
         <div id="popupExample">
-          <div id="popupDateField" class="dateField" style="margin-top: 160px">
-            Show Calendar
-          </div>
-          <div id="popupDateDate" class="dateField" style="margin-top: 160px">
+          <div id="popupDateDate" class="dateField" style="margin-top: 160px; ">
             2009-01-2 14:15
           </div>
           
+          <div id="popupDateField" class="dateField popupLauncher" style="margin-top: 10px;">
+            Show Calendar
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <br style="clear: both;">
+
+
+    <div style="float: left; width: 50%; margin-top: 30px">
+      <div style="height: 400px; background-color: #efefef; padding: 10px; -webkit-border-radius: 12px; -moz-border-radius: 12px; margin-right: 10px">
+        <h3 style="text-align: center; background-color: white; -webkit-border-radius: 10px; -moz-border-radius: 10px; margin-top: 0px; margin-bottom: 20px; padding: 8px">
+          Popup Calendar without time
+        </h3>
+        <div id="popupExample2">
+          <div   id="popupDateDate2" class="dateField" style="margin-top: 160px; ">
+            2009-01-2
+          </div>
+          
+          <div id="popupDateField2" class="dateField popupLauncher" style="margin-top: 10px;">
+            Show Calendar
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="float: right; width: 50%; margin-top: 30px">
+      <div style="height: 400px; background-color: #efefef; padding: 10px; -webkit-border-radius: 12px; -moz-border-radius: 12px; margin-left: 10px">
+        <h3 style="text-align: center; background-color: white; -webkit-border-radius: 10px; -moz-border-radius: 10px; margin-top: 0px; margin-bottom: 20px; padding: 8px">
+          Popup Calendar closing on a day click
+        </h3>
+        <div id="popupExample3">
+          <div   id="popupDateDate3" class="dateField" style="margin-top: 160px; ">
+            2009-01-2 14:15
+          </div>
+          
+          <div id="popupDateField3"  class="dateField popupLauncher" style="margin-top: 10px;">
+            Show Calendar
+          </div>
         </div>
       </div>
     </div>
