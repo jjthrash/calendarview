@@ -64,6 +64,7 @@ var Calendar = Class.create({
     selectHandler        = params.selectHandler        || null;
     this.hideOnClickOnDay     = params.hideOnClickOnDay     || false;
     this.hideOnClickElsewhere = params.hideOnClickElsewhere || false;
+    this.extraOutputDateFields     = params.extraOutputDateFields || $A();
     
     if (parentElement){
       this.parentElement = $(parentElement);
@@ -210,7 +211,7 @@ var Calendar = Class.create({
       }
     
       hourSelect.observe('change', function(event){
-        selectedIndex = event.element().selectedIndex
+        selectedIndex = event.element().selectedIndex;
         if (selectedIndex){
           this.date.setHours(selectedIndex);
           this.updateOuterField();
@@ -251,11 +252,19 @@ var Calendar = Class.create({
     
   },
 
+  updateOuterFieldReal: function(element){
+    if (element.tagName == 'DIV' || element.tagName == 'SPAN') {
+      element.update(this.date.print(this.dateFormat))
+    } else if (element.tagName == 'INPUT') {
+      this.dateField.value = this.date.print(this.dateFormat) 
+    }
+  },
+
   updateOuterField: function(){
-    if (this.dateField.tagName == 'DIV')
-      this.dateField.update(this.date.print(this.dateFormat))
-    else if (this.dateField.tagName == 'INPUT') {
-      this.dateField.value = this.date.print(this.dateFormat) }
+    this.updateOuterFieldReal(this.dateField);
+    this.extraOutputDateFields.each(function(field){
+      this.updateOuterFieldReal($(field));
+    }.bind(this));
   },
   
 
