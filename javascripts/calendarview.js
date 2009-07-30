@@ -113,10 +113,10 @@ var Calendar = Class.create({
   build: function(){
     // If no parent was specified, assume that we are creating a popup calendar.
     if (this.parentElement) {
-      parent = this.parentElement;
+      var parentForCalendarTable = this.parentElement;
       this.isPopup = false;
     } else {
-      parent = document.getElementsByTagName('body')[0];
+      parentForCalendarTable = document.getElementsByTagName('body')[0];
       this.isPopup = true;
     }
     
@@ -244,7 +244,7 @@ var Calendar = Class.create({
     Event.observe(this.container, 'mousedown', Calendar.handleMouseDownEvent)
 
     // Append to parent element
-    parent.appendChild(this.container)
+    parentForCalendarTable.appendChild(this.container)
     
     if (this.isPopup){
       new Draggable(table, {handle : firstRow });
@@ -264,8 +264,7 @@ var Calendar = Class.create({
   // Update  Calendar
   //----------------------------------------------------------------------------
 
-  update: function(date)
-  {
+  update: function(date) {
     var calendar   = this
     var today      = new Date()
     var thisYear   = today.getFullYear()
@@ -348,7 +347,7 @@ var Calendar = Class.create({
   },
 
 
-  _drawButtonCell: function(parent, text, colSpan, navAction)
+  _drawButtonCell: function(parentForCell, text, colSpan, navAction)
   {
     var cell          = new Element('td')
     if (colSpan > 1) cell.colSpan = colSpan
@@ -357,7 +356,7 @@ var Calendar = Class.create({
     cell.navAction    = navAction
     cell.innerHTML    = text
     cell.unselectable = 'on' // IE
-    parent.appendChild(cell)
+    parentForCell.appendChild(cell)
     return cell
   },
 
