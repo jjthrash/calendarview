@@ -4,8 +4,8 @@ About
 This is a fork of CalendarView by Justin Mecham who had guts to create a calendar 
 written in modern and readable javascript using Prototype.
 
-CalendarView  on GitHub: http://wiki.github.com/jsmecham/calendarview/tree
-CalendarView site: calendarview.org.
+* CalendarView  on GitHub: http://wiki.github.com/jsmecham/calendarview/tree
+* CalendarView site: calendarview.org.
 
 Look at the original README in file README.original.markdown
 
