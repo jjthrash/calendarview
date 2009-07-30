@@ -20,18 +20,17 @@
 
 /* This branch by Yuri Leikind ( git://github.com/leikind/calendarview.git ) adds the following features/changes:
 
-* Time for dealing with two dropdowns for hours and minutes
-* Draggable popup calendars
+The differences from the original are
+
+* Support for time in the form of two dropdowns for hours and minutes. Can be turned off/on.
+* Draggable popup calendars (which introduces new dependancies: script.aculo.us effects.js and dragdrop.js)
 * Close button
-* Many popup calendars on page
-* Refactoring, cleaner OO design : 
-  * Getting rid of things like 
-      Calendar.prototype = {
-    point is: why use Prototype's Class.create() together with Calendar.prototype, add static members to it 
-    like Calendar._checkCalendar = function(event) and we end up having a perfect mess of all possible approaches
-  * Getting rid of DynArch legacy as Calendar.setup({}) in favor of a clean and simple new Calendar({}).
-    This also changes the behavior of popup calendars -  they are not created every time they pop up, on the contrary,
-    they are created once just like embedded calendars, and then shown or hidden.
+* Popup calendars  are not created every time they pop up, on the contrary, they are created once just like
+  embedded calendars, and then shown or hidden.
+* Possible to have many popup calendars on page. The behavior of the original calendarview when a popup 
+  calendar is hidden when the user clicks elsewhere on the page is an option now.
+* Refactoring and changes to the OO design like getting rid of Calendar.prototype in favor of class based 
+  OO provided by OO, and getting rid of Calendar.setup({}) in favor of a simple object constructor new Calendar({}).
 
 */
 

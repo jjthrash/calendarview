@@ -1,117 +1,51 @@
-CalendarView
-============
-
-A lightweight JavaScript calendar widget that follows current web standards
-and best practices. It was developed for use with the Prototype JavaScript
-framework (requires Prototype 1.6 or greater).
-
-More information (including examples and latest releases) can be found at
-[calendarview.org](http://calendarview.org/).
-
-CalendarView is developed and maintained by [Justin Mecham](mailto:justin@aspect.net).
-
-
-
-Basic Usage
+About
 -----------
 
-### Step 1 ###
+This is a fork of CalendarView by Justin Mecham who had guts to create a calendar 
+written in modern and readable javascript.
 
-Include the JavaScript (calendarview.js) and CSS (calendarview.css)
-in the header of your HTML document:
+CalendarView view on GitHub: http://wiki.github.com/jsmecham/calendarview/tree
+CalendarView site: calendarview.org.
 
-    <link rel="stylesheet" type="text/css" href="path/to/calendarview.css" />
-    <script type="text/javascript" src="path/to/calendarview.js"></script>
+Look at the original README in file README.original.markdown
 
-### Step 2 ###
+The differences from the original are
 
-Create a container element for the calendar to be displayed within:
-
-    <div id="my_calendar">
-      <!-- CalendarView will be inserted here! -->
-    </div>
-
-### Step 3 ###
-
-Create another container element to receive the date that the user
-selects:
-
-    <span id="selected_date"><!-- Selected date will be inserted here! --></span>
-
-For most cases, you're going to want to add this to a form. To add the value
-to a form element, just reference the input element by its dom id:
-
-    <input type="hidden" id="selected_date" />
-
-### Step 4 ###
-
-Initialize a CalendarView instance for the container and date field
-you've set up:
-
-    <script type="text/javascript">
-      var calendar = CalendarView.new(
-        { parentElement: 'my_calendar', dateField: 'selected_date' }
-      )
-    </script>
+* Support for time in the form of two dropdowns for hours and minutes. Can be turned off/on.
+* Draggable popup calendars (which introduces new dependancies: script.aculo.us effects.js and dragdrop.js)
+* Close button
+* Popup calendars  are not created every time they pop up, on the contrary, they are created once just like
+  embedded calendars, and then shown or hidden.
+* Possible to have many popup calendars on page. The behavior of the original calendarview when a popup 
+  calendar is hidden when the user clicks elsewhere on the page is an option now.
+* Refactoring and changes to the OO design like getting rid of Calendar.prototype in favor of class based 
+  OO provided by OO, and getting rid of Calendar.setup({}) in favor of a simple object constructor new Calendar({}).
 
 
+Usage
+-----------
 
-Customization
--------------
-
-Since it adheres to the latest web standards and best practices, its simple
-to integrate CalendarView with your web site or project. All styling is done
-via CSS and functionally integrating with the site is as simple as registering
-your JavaScript as callbacks on the calendar.
-
-### Output HTML ###
-
-You are encouraged to style the calendar to match your specific needs. For
-reference, the following is the HTML as it is output from the script:
-
-    <div class="calendar">
-      <table>
-        <thead>
-          <tr>
-            <td colspan="7" class="title">January 2009</td>
-          </tr>
-          <tr>
-            <td class="button">«</td>
-            <td class="button">‹</td>
-            <td colspan="3" class="button">Today</td>
-            <td class="button">›</td>
-            <td class="button">»</td>
-          </tr>
-          <tr>
-            <th class="weekend">S</th>
-            <th>M</th>
-            <th>T</th>
-            <th>W</th>
-            <th>T</th>
-            <th>F</th>
-            <th class="weekend">S</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="days">
-            <td class="otherDay weekend">28</td>
-            <td class="otherDay">29</td>
-            <td class="otherDay">30</td>
-            <td class="otherDay">31</td>
-            <td>1</td>
-            <td>2</td>
-            <td class="weekend">3</td>
-          </tr>
-          ... snip ...
-        </tbody>
-      </table>
-    </div>
+To create a calendar create an instance of class Calendar:
 
 
+  new Calendar({
+     dateField: 'embeddedDateField',
+     parentElement: 'embeddedCalendar',
+     withTime: true
+  });
+  
+Acceptable options are:
 
-Additional Resources
---------------------
+* parentElement - DOM id of the element where the calendar will appear. This calendar will always be visible on page. If this option
+  is missing, the calendar is a popup caledar.
+* triggerElement - DOM id of the element clicking on which will show the popup calendar.
+* dateField - DOM id of the element with date and optionally time. This element can be both an INPIT element or just a DIV or a SPAN. 
+  When initializing the calendar tries to parse the contents of the element (or value of the INPUT field) and if it's successful, 
+  the calendar will show the date/time. The element is updated when the user changes date/time of the calendar.
+* withTime - can be true or false, when true, the calendar shows two dropdown boxes for hours and minutes.
+* dateFormat - format of the date or date and time. By default for a calendar without time %Y-%m-%d is used, for a calendar with time
+  %Y-%m-%d %H:%M is used. If you provide this option make sure whether it has or doesn't have the time format according to option withTime.
+* hideOnClickOnDay - can be true or false. If true, the popup calendar will hide once the user clicks of a day. The default is false.
+* hideOnClickElsewhere - can be true or false. If true, the popup calendar will hide once the user clicks elsewhere in the page. 
+  The default is false.
 
-* [CalendarView Web Site](http://calendarview.org/)
-* [Source Code (GitHub)](http://github.com/jsmecham/calendarview/)
-* [Issue Tracker (Lighthouse)](http://aspect.lighthouseapp.com/projects/23770-calendarview/overview)
