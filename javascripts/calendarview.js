@@ -55,7 +55,7 @@ var Calendar = Class.create({
 
   initialize: function(params){
                                                
-    parentElement        = params.parentElement        || null; // just getting rid of indefined 'values' :)
+    parentElement        = params.parentElement        || null; // just getting rid of undefined 'values' :)
     withTime             = params.withTime             || null;
     dateFormat           = params.dateFormat           || null;
     dateField            = params.dateField            || null;
@@ -382,8 +382,9 @@ var Calendar = Class.create({
 
   // Calls the Close Handler (if defined)
   callCloseHandler: function(){
-    if (this.closeHandler)
+    if (this.closeHandler){
       this.closeHandler(this)
+    }
   },
 
 
@@ -395,8 +396,8 @@ var Calendar = Class.create({
   show: function(){
     this.container.show()
     if (this.isPopup) {
-      window._popupCalendar = this;
       if (this.hideOnClickElsewhere){
+        window._popupCalendar = this;
         document.observe('mousedown', Calendar._checkCalendar);
       }
     }
@@ -489,11 +490,13 @@ Calendar.NAV_NEXT_YEAR      =  2;
 // document, if the calendar is shown. If the click was outside the open
 // calendar this function closes it.
 Calendar._checkCalendar = function(event) {
-  if (!window._popupCalendar)
+  if (!window._popupCalendar){
     return false;
-  if (Element.descendantOf(Event.element(event), window._popupCalendar.container))
+  }
+  if (Element.descendantOf(Event.element(event), window._popupCalendar.container)){
     return;
-  window._popupCalendar.callCloseHandler()
+  }
+  window._popupCalendar.callCloseHandler();
   return Event.stop(event)
 }
 
@@ -523,16 +526,26 @@ Calendar.handleMouseUpEvent = function(event){
   // Clicked on a day
   if (typeof el.navAction == 'undefined') {
     if (calendar.currentDateElement) {
-      Element.removeClassName(calendar.currentDateElement, 'selected')
-      Element.addClassName(el, 'selected')
-      calendar.shouldClose = (calendar.currentDateElement == el)
-      if (!calendar.shouldClose) calendar.currentDateElement = el
+      Element.removeClassName(calendar.currentDateElement, 'selected');
+      Element.addClassName(el, 'selected');
+      calendar.shouldClose = (calendar.currentDateElement == el);
+      
+      if (!calendar.shouldClose) {
+        calendar.currentDateElement = el;
+      }
     }
     calendar.date.setDateOnly(el.date)
     isNewDate = true
     calendar.shouldClose = !el.hasClassName('otherDay')
     var isOtherMonth     = !calendar.shouldClose
-    if (isOtherMonth) calendar.update(calendar.date)
+    if (isOtherMonth) {
+      calendar.update(calendar.date)
+    }
+    
+    if (! calendar.hideOnClickOnDay){ // override closing if calendar.hideOnClickOnDay is false
+      calendar.shouldClose = false;
+    }
+    
   } else { // Clicked on an action button
     var date = new Date(calendar.date)
 
@@ -614,13 +627,13 @@ Calendar.defaultSelectHandler = function(calendar){
     calendar.dateField.onchange()
 
   // Call the close handler, if necessary
-  if (calendar.shouldClose) calendar.callCloseHandler()
+  if (calendar.shouldClose) {
+    calendar.callCloseHandler();
+  }
 }
 
 Calendar.defaultCloseHandler = function(calendar){
-  if (calendar.hideOnClickOnDay){
-    calendar.hide();
-  }
+  calendar.hide();
   calendar.shouldClose = false;
 }
 
