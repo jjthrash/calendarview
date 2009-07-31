@@ -255,9 +255,8 @@ var Calendar = Class.create({
     if (element.tagName == 'DIV' || element.tagName == 'SPAN') {
       element.update(this.date.print(this.dateFormat))
     } else if (element.tagName == 'INPUT') {
-      this.dateField.value = this.date.print(this.dateFormat)
+      element.value = this.date.print(this.dateFormat)
     }
-    this.onDateChangedCallback(this.date, this);
   },
 
   updateOuterField: function(){
@@ -265,6 +264,7 @@ var Calendar = Class.create({
     this.extraOutputDateFields.each(function(field){
       this.updateOuterFieldReal($(field));
     }.bind(this));
+    this.onDateChangedCallback(this.date, this);    
   },
 
 
@@ -708,7 +708,12 @@ Date.WEEK          =  7 * Date.DAY
 
 // Parses Date
 Date.parseDate = function(str, fmt) {
-  str = str.strip()
+  if (str){
+    str = new String(str);
+  }else{
+    str = new String('');
+  }
+  str = str.strip();
 
   var today = new Date();
   var y     = 0;
