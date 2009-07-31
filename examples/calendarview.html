@@ -50,6 +50,8 @@
         new Calendar({
             dateField: 'popupDateDate',
             triggerElement: 'popupDateField',
+            onHideCallback : function(date, calendar){console.log('closed, date is ' + date)},
+            onDateChangedCallback : function(date, calendar){console.log('date changed, date is ' + date)},
             withTime: true
         });
         

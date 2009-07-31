@@ -18,7 +18,7 @@
 //
 
 
-/* This branch by Yuri Leikind ( git://github.com/leikind/calendarview.git ) adds the following features/changes:
+/* This fork by Yuri Leikind ( git://github.com/leikind/calendarview.git ) adds the following features/changes:
 
 The differences from the original are
 
@@ -60,11 +60,11 @@ var Calendar = Class.create({
     dateFormat           = params.dateFormat           || null;
     dateField            = params.dateField            || null;
     triggerElement       = params.triggerElement       || null;
-    closeHandler         = params.closeHandler         || null;
-    selectHandler        = params.selectHandler        || null;
-    this.minuteStep           = params.minuteStep           || 5;
-    this.hideOnClickOnDay     = params.hideOnClickOnDay     || false;
-    this.hideOnClickElsewhere = params.hideOnClickElsewhere || false;
+    this.onHideCallback  = params.onHideCallback           || function(date, calendar){};
+    this.onDateChangedCallback     = params.onDateChangedCallback || function(date, calendar){};
+    this.minuteStep                = params.minuteStep            || 5;
+    this.hideOnClickOnDay          = params.hideOnClickOnDay      || false;
+    this.hideOnClickElsewhere      = params.hideOnClickElsewhere  || false;
     this.extraOutputDateFields     = params.extraOutputDateFields || $A();
 
     if (parentElement){
@@ -87,8 +87,6 @@ var Calendar = Class.create({
 
     this.build();
 
-    this.selectHandler = selectHandler || Calendar.defaultSelectHandler;
-
     if (dateField) {
       this.dateField = $(dateField);
       this.parseDate(this.dateField.innerHTML || this.dateField.value);
@@ -97,8 +95,6 @@ var Calendar = Class.create({
 
     if (this.isPopup) { //Popup Calendars
       var triggerElement = $(triggerElement || dateField);
-      this.closeHandler = closeHandler || Calendar.defaultCloseHandler;
-
 
       triggerElement.onclick = function() {
         this.showAtElement(triggerElement);
@@ -261,6 +257,7 @@ var Calendar = Class.create({
     } else if (element.tagName == 'INPUT') {
       this.dateField.value = this.date.print(this.dateFormat)
     }
+    this.onDateChangedCallback(this.date, this);
   },
 
   updateOuterField: function(){
@@ -399,26 +396,6 @@ var Calendar = Class.create({
   },
 
 
-
-  //------------------------------------------------------------------------------
-  // Callbacks
-  //------------------------------------------------------------------------------
-
-  // Calls the Select Handler (if defined)
-  callSelectHandler: function() {
-    if (this.selectHandler)
-      this.selectHandler(this, this.date.print(this.dateFormat))
-  },
-
-  // Calls the Close Handler (if defined)
-  callCloseHandler: function(){
-    if (this.closeHandler){
-      this.closeHandler(this)
-    }
-  },
-
-
-
   //------------------------------------------------------------------------------
   // Calendar Display Functions
   //------------------------------------------------------------------------------
@@ -449,9 +426,11 @@ var Calendar = Class.create({
 
   // Hides the Calendar
   hide: function() {
-    if (this.isPopup)
+    if (this.isPopup){
       Event.stopObserving(document, 'mousedown', Calendar._checkCalendar)
-    this.container.hide()
+    }
+    this.container.hide();
+    this.onHideCallback(this.date, this);
   },
 
 
@@ -526,7 +505,7 @@ Calendar._checkCalendar = function(event) {
   if (Element.descendantOf(Event.element(event), window._popupCalendar.container)){
     return;
   }
-  window._popupCalendar.callCloseHandler();
+  Calendar.closeHandler(window._popupCalendar);
   return Event.stop(event)
 }
 
@@ -566,8 +545,8 @@ Calendar.handleMouseUpEvent = function(event){
     }
     calendar.date.setDateOnly(el.date)
     isNewDate = true
-    calendar.shouldClose = !el.hasClassName('otherDay')
-    var isOtherMonth     = !calendar.shouldClose
+    calendar.shouldClose = !el.hasClassName('otherDay');
+    var isOtherMonth     = !calendar.shouldClose;
     if (isOtherMonth) {
       calendar.update(calendar.date)
     }
@@ -579,15 +558,16 @@ Calendar.handleMouseUpEvent = function(event){
   } else { // Clicked on an action button
     var date = new Date(calendar.date)
 
-    if (el.navAction == Calendar.NAV_TODAY)
-      date.setDateOnly(new Date())
+    if (el.navAction == Calendar.NAV_TODAY){
+      date.setDateOnly(new Date());
+    }
 
     var year = date.getFullYear()
     var mon = date.getMonth()
     function setMonth(m) {
-      var day = date.getDate()
-      var max = date.getMonthDays(m)
-      if (day > max) date.setDate(max)
+      var day = date.getDate();
+      var max = date.getMonthDays(m);
+      if (day > max) date.setDate(max);
       date.setMonth(m)
     }
     switch (el.navAction) {
@@ -595,17 +575,17 @@ Calendar.handleMouseUpEvent = function(event){
       // Previous Year
       case Calendar.NAV_PREVIOUS_YEAR:
         if (year > calendar.minYear)
-          date.__setFullYear(year - 1)
+          date.__setFullYear(year - 1);
         break
 
       // Previous Month
       case Calendar.NAV_PREVIOUS_MONTH:
         if (mon > 0) {
-          setMonth(mon - 1)
+          setMonth(mon - 1);
         }
         else if (year-- > calendar.minYear) {
-          date.__setFullYear(year)
-          setMonth(11)
+          date.__setFullYear(year);
+          setMonth(11);
         }
         break
 
@@ -618,51 +598,55 @@ Calendar.handleMouseUpEvent = function(event){
         if (mon < 11) {
           setMonth(mon + 1)
         }else if (year < calendar.maxYear) {
-          date.__setFullYear(year + 1)
-          setMonth(0)
+          date.__setFullYear(year + 1);
+          setMonth(0);
         }
         break
 
       // Next Year
       case Calendar.NAV_NEXT_YEAR:
-        if (year < calendar.maxYear)
+        if (year < calendar.maxYear){
           date.__setFullYear(year + 1)
-        break
+        }
+        break;
     }
 
     if (!date.equalsTo(calendar.date)) {
       calendar.updateIfDateDifferent(date)
-      isNewDate = true
+      isNewDate = true;
     } else if (el.navAction == 0) {
-      isNewDate = (calendar.shouldClose = true)
+      isNewDate = (calendar.shouldClose = true);
     }
   }
 
-  if (isNewDate) event && calendar.callSelectHandler()
-  if (calendar.shouldClose) event && calendar.callCloseHandler()
+  if (isNewDate) event && Calendar.selectHandler(calendar, calendar.date.print(calendar.dateFormat));
+  if (calendar.shouldClose) event && Calendar.closeHandler(calendar);
 
-  Event.stopObserving(document, 'mouseup', Calendar.handleMouseUpEvent)
+  Event.stopObserving(document, 'mouseup', Calendar.handleMouseUpEvent);
 
-  return Event.stop(event)
+  return Event.stop(event);
 }
 
-Calendar.defaultSelectHandler = function(calendar){
-  if (!calendar.dateField) return false
+Calendar.selectHandler = function(calendar){
+  if (!calendar.dateField) {
+    return false;
+  }
 
   // Update dateField value
-  calendar.updateOuterField()
+  calendar.updateOuterField();
 
   // Trigger the onchange callback on the dateField, if one has been defined
-  if (typeof calendar.dateField.onchange == 'function')
-    calendar.dateField.onchange()
+  if (typeof calendar.dateField.onchange == 'function'){
+    calendar.dateField.onchange();
+  }
 
   // Call the close handler, if necessary
   if (calendar.shouldClose) {
-    calendar.callCloseHandler();
+    Calendar.closeHandler(calendar);
   }
 }
 
-Calendar.defaultCloseHandler = function(calendar){
+Calendar.closeHandler = function(calendar){
   calendar.hide();
   calendar.shouldClose = false;
 }
@@ -674,7 +658,7 @@ Calendar.defaultCloseHandler = function(calendar){
 //------------------------------------------------------------------------------
 
 // global object that remembers the calendar
-window._popupCalendar = null
+window._popupCalendar = null;
 
 
 

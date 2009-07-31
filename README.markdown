@@ -50,4 +50,9 @@ Acceptable options are:
   The default is false.
 * minuteStep - step between values in the minute dropdown, for example, if the step is 5, the dropdown contain values 0, 5, 10, and so on.
   The default is 5.
+* onHideCallback - a callback function which get called when a popup calendar is hidden. The first parameter is the the object, the second is
+  the calendar instance.
+* onDateChangedCallback - a callback function which get called when the date or time is changed. The first parameter is the the object, 
+  the second is the calendar instance.
+  
 
