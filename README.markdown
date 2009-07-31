@@ -48,4 +48,6 @@ Acceptable options are:
 * hideOnClickOnDay - can be true or false. If true, the popup calendar will hide once the user clicks of a day. The default is false.
 * hideOnClickElsewhere - can be true or false. If true, the popup calendar will hide once the user clicks elsewhere in the page. 
   The default is false.
+* minuteStep - step between values in the minute dropdown, for example, if the step is 5, the dropdown contain values 0, 5, 10, and so on.
+  The default is 5.
 
