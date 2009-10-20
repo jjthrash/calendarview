@@ -18,12 +18,24 @@ The differences from the original are
   embedded calendars, and then shown or hidden.
 * Possible to have many popup calendars on page. The behavior of the original calendarview when a popup 
   calendar is hidden when the user clicks elsewhere on the page is an option now.
+* Very simple localization. Currently has support for Dutch and French in addition to English. The message bundles
+  are so small that they are embedded right in the JS file, if you care about these bytes, feel free
+  to delete what you don't need. Look for Calendar.messagebundle.
 * Refactoring and changes to the OO design like getting rid of Calendar.prototype in favor of class based 
   OO provided by OO, and getting rid of Calendar.setup({}) in favor of a simple object constructor new Calendar({}).
 
 
 Usage
 -----------
+
+Optional setup of the language:
+
+  Calendar.language = 'nl';
+  
+or
+
+  Calendar.language = 'fr';
+  
 
 To create a calendar create an instance of class Calendar:
 
