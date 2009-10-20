@@ -797,12 +797,16 @@ Calendar.handleMouseUpEvent = function(event){
       calendar.shouldClose = (calendar.currentDateElement == el);
 
       if (!calendar.shouldClose) {
+
         calendar.currentDateElement = el;
       }
     }
-    calendar.date.setDateOnly(el.date)
-    isNewDate = true
+    calendar.date.setDateOnly(el.date);
+    isNewDate = true;
+
     calendar.shouldClose = !el.hasClassName('otherDay');
+
+
     var isOtherMonth     = !calendar.shouldClose;
     if (isOtherMonth) {
       calendar.update(calendar.date)
@@ -874,9 +878,9 @@ Calendar.handleMouseUpEvent = function(event){
     if (!date.equalsTo(calendar.dateOrDateBackedUp())) {
       calendar.updateIfDateDifferent(date);
       isNewDate = true;
-    } else if (el.navAction == 0) {
-      isNewDate = (calendar.shouldClose = true);
-    }
+    } // else if (el.navAction == 0) {
+    //   isNewDate = (calendar.shouldClose = true);
+    // } // Hm, what did I mean with this code?
   }
   
   if (isNewDate && event) {
