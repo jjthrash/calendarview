@@ -93,13 +93,12 @@ var Calendar = Class.create({
 
     this.dateFormatForHiddenField = params.dateFormatForHiddenField || this.dateFormat;
 
-    this.build();
-
     if (dateField) {
       this.dateField = $(dateField);
-      this.parseDate(this.dateField.innerHTML || this.dateField.value);
+      this.date = this.parseDate(this.dateField.innerHTML || this.dateField.value);
     }
 
+    this.build();
 
     if (this.isPopup) { //Popup Calendars
       var triggerElement = $(triggerElement || dateField);
@@ -113,11 +112,13 @@ var Calendar = Class.create({
       this.show();
     }
 
+    if (params.updateOuterFieldsOnInit){
+      this.updateOuterFieldWithoutCallback(); // Just for the sake of localization and DatePicker
+    }
   },
 
   // Build the DOM structure
   build: function(){
-    
     // If no parent was specified, assume that we are creating a popup calendar.
     if (this.parentElement) {
       var parentForCalendarTable = this.parentElement;
@@ -249,7 +250,7 @@ var Calendar = Class.create({
     this.container.appendChild(table)
 
     // Initialize Calendar
-    this.update(this.date)
+    this.update(this.date);
 
     // Observe the container for mousedown events
     Event.observe(this.container, 'mousedown', Calendar.handleMouseDownEvent)
@@ -260,7 +261,6 @@ var Calendar = Class.create({
     if (this.isPopup){
       new Draggable(table, {handle : firstRow });
     }
-
   },
 
   updateOuterFieldReal: function(element){
@@ -268,17 +268,22 @@ var Calendar = Class.create({
       formatted = this.date ? this.date.print(this.dateFormat) : ''
       element.update(formatted);
     } else if (element.tagName == 'INPUT') {
-      formatted = this.date ? this.date.print(this.dateFormatForHiddenField) : ''      
+      formatted = this.date ? this.date.print(this.dateFormatForHiddenField) : '';
       element.value = formatted;
     }
   },
 
-  updateOuterField: function(){
+  updateOuterFieldWithoutCallback: function(){
     this.updateOuterFieldReal(this.dateField);
     this.extraOutputDateFields.each(function(field){
       this.updateOuterFieldReal($(field));
     }.bind(this));
-    this.onDateChangedCallback(this.date, this);    
+  },
+
+
+  updateOuterField: function(){
+    this.updateOuterFieldWithoutCallback();
+    this.onDateChangedCallback(this.date, this);
   },
 
 
@@ -288,7 +293,7 @@ var Calendar = Class.create({
 
   update: function(date) {
     
-    // this.dumpDates();
+    this.dumpDates();
     
     var today      = new Date();
     var thisYear   = today.getFullYear();
@@ -314,6 +319,8 @@ var Calendar = Class.create({
     // Calculate the first day to display (including the previous month)
     date.setDate(1)
     date.setDate(-(date.getDay()) + 1)
+
+    this.dumpDates();
 
     // Fill in the days of the month
     Element.getElementsBySelector(this.container, 'tbody tr').each(
@@ -461,9 +468,11 @@ var Calendar = Class.create({
   // Tries to identify the date represented in a string.  If successful it also
   // calls this.updateIfDateDifferent which moves the calendar to the given date.
   parseDate: function(str, format){
-    if (!format)
+    if (!format){
       format = this.dateFormat
-    this.updateIfDateDifferent(Date.parseDate(str, format))
+    }
+    var res = Date.parseDate(str, format);
+    return res;
   },
 
 
