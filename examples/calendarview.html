@@ -48,32 +48,39 @@
 
         // Embedded Calendar
         new Calendar({
-           dateField: 'embeddedDateField',
-           parentElement: 'embeddedCalendar',
+           initialDate: $('embeddedDateField').innerHTML,
+           outputFields: $A(['embeddedDateField']),
+           embedAt: 'embeddedCalendar',
            withTime: true
         });
 
         // Popup Calendar
         new Calendar({
-            dateField: 'popupDateDate',
-            triggerElement: 'popupDateField',
+            initialDate: $('popupDateDate').innerHTML,
+            outputFields: $A(['popupDateDate']),
+            
+            popupTriggerElement: 'popupDateField',
             onHideCallback : function(date, calendar){console.log('closed, date is ' + date)},
             onDateChangedCallback : function(date, calendar){console.log('date changed, date is ' + date)},
             withTime: true
         });
         
         new Calendar({
-            dateField: 'popupDateDate2',
-            triggerElement: 'popupDateField2',
-            withTime: false
+            initialDate: $('popupDateDate2').innerHTML,
+            outputFields: $A(['popupDateDate2']),
+          
+            popupTriggerElement: 'popupDateField2',
+            withTime: false,
+            hideOnClickElsewhere : true
         });
-
+        
         new Calendar({
-            dateField: 'popupDateDate3',
-            triggerElement: 'popupDateField3',
+            initialDate: $('popupDateDate3').innerHTML,
+            outputFields: $A(['popupDateDate3']),
+
+            popupTriggerElement: 'popupDateField3',
             withTime: true,
-            hideOnClickOnDay : true,
-            hideOnClickElsewhere : false
+            hideOnClickOnDay : true
         });
         
       }
@@ -124,7 +131,7 @@
     <div style="float: left; width: 50%; margin-top: 30px">
       <div style="height: 400px; background-color: #efefef; padding: 10px; -webkit-border-radius: 12px; -moz-border-radius: 12px; margin-right: 10px">
         <h3 style="text-align: center; background-color: white; -webkit-border-radius: 10px; -moz-border-radius: 10px; margin-top: 0px; margin-bottom: 20px; padding: 8px">
-          Popup Calendar without time
+          Popup Calendar without time, closing on a click anywhere else on page
         </h3>
         <div id="popupExample2">
           <div   id="popupDateDate2" class="dateField" style="margin-top: 160px; ">
