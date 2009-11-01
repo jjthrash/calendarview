@@ -135,7 +135,7 @@ var Calendar = Class.create({
       var parentForCalendarTable = this.embedAt;
       this.isPopup = false;
     } else {
-      parentForCalendarTable = document.getElementsByTagName('body')[0];
+      var parentForCalendarTable = document.getElementsByTagName('body')[0];
       this.isPopup = true;
     }
 
@@ -221,6 +221,7 @@ var Calendar = Class.create({
       for (var i = 0; i < 24; i++) {
         hourSelect.appendChild(new Element('option', {value : i}).update(i));
       }
+      this.hourSelect = hourSelect;
 
       cell.appendChild(new Element('span')).update(' : ');
 
@@ -228,7 +229,8 @@ var Calendar = Class.create({
       for (var i = 0; i < 60; i += this.minuteStep) {
         minuteSelect.appendChild(new Element('option', {value : i}).update(i));
       }
-
+      this.minuteSelect = minuteSelect;
+      
       hourSelect.observe('change', function(event){
         if (! this.date) return;        
         var elem = event.element();
@@ -492,11 +494,33 @@ var Calendar = Class.create({
   },
   
   backupDateAndCurrentElement: function(){
+    if (this.minuteSelect){
+      this.minuteSelect.disable();
+    }
+    if (this.hourSelect){
+      this.hourSelect.disable();
+    }
+    
     this.currentDateElementBackedUp = this.currentDateElement;
     this.currentDateElement = null;
     
     this.dateBackedUp = this.date;
     this.date = null;
+  },
+
+  restoreDateAndCurrentElement: function(){
+    if (this.minuteSelect){
+      this.minuteSelect.enable();
+    }
+    if (this.hourSelect){
+      this.hourSelect.enable();
+    }
+    
+    this.currentDateElement = this.currentDateElementBackedUp;
+    this.currentDateElementBackedUp = null;
+    
+    this.date = this.dateBackedUp;
+    this.dateBackedUp = null;
   },
 
   isBackedUp: function(){
@@ -509,13 +533,6 @@ var Calendar = Class.create({
   },
 
 
-  restoreDateAndCurrentElement: function(){
-    this.currentDateElement = this.currentDateElementBackedUp;
-    this.currentDateElementBackedUp = null;
-    
-    this.date = this.dateBackedUp;
-    this.dateBackedUp = null;
-  },
 
 
   setRange: function(minYear, maxYear) {
@@ -530,7 +547,7 @@ var Calendar = Class.create({
 // Constants
 //------------------------------------------------------------------------------
 
-
+// Delete or add new locales from I18n.js according to your needs
 Calendar.messagebundle = $H({'en' :
   $H({
     'monday' : 'Monday', 
