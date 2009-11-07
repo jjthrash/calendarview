@@ -70,19 +70,22 @@ var Calendar = Class.create({
       Calendar.init();
     }
 
-    embedAt                   = params.embedAt        || null;
+    embedAt                   = params.embedAt              || null;
     withTime                  = params.withTime             || null;
     dateFormat                = params.dateFormat           || null;
     initialDate               = params.initialDate          || null;
-    popupTriggerElement       = params.popupTriggerElement       || null;
-    this.onHideCallback       = params.onHideCallback           || function(date, calendar){};
+    popupTriggerElement       = params.popupTriggerElement        || null;
+    this.onHideCallback       = params.onHideCallback             || function(date, calendar){};
     this.onDateChangedCallback     = params.onDateChangedCallback || function(date, calendar){};
     this.minuteStep                = params.minuteStep            || 5;
     this.hideOnClickOnDay          = params.hideOnClickOnDay      || false;
     this.hideOnClickElsewhere      = params.hideOnClickElsewhere  || false;
-    this.outputFields              = params.outputFields || $A();
-    
-    
+    this.outputFields              = params.outputFields          || $A();
+
+    this.outputFields = $A(this.outputFields).collect(function(f){
+      return $(f);
+    });
+
     if (embedAt){
       this.embedAt = $(embedAt);
       this.embedAt._calendar = this;
@@ -288,7 +291,7 @@ var Calendar = Class.create({
 
   updateOuterFieldWithoutCallback: function(){
     this.outputFields.each(function(field){
-      this.updateOuterFieldReal($(field));
+      this.updateOuterFieldReal(field);
     }.bind(this));
   },
 
@@ -296,6 +299,16 @@ var Calendar = Class.create({
   updateOuterField: function(){
     this.updateOuterFieldWithoutCallback();
     this.onDateChangedCallback(this.date, this);
+  },
+
+  viewOutputFields: function(){
+    return this.outputFields.findAll(function(element){
+      if (element.tagName == 'DIV' || element.tagName == 'SPAN'){
+        return true;
+      }else{
+        return false;
+      }
+    });
   },
 
 
