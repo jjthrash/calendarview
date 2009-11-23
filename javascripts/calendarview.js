@@ -70,8 +70,8 @@ var Calendar = Class.create({
     this.hideOnClickOnDay          = params.hideOnClickOnDay      || false;
     this.hideOnClickElsewhere      = params.hideOnClickElsewhere  || false;
     this.outputFields              = params.outputFields          || $A();
-    this.x = params.x || 0.5;
-    this.y = params.y || 0;
+    this.x = params.x || 0;
+    this.y = params.y || 0.6;
 
     this.outputFields = $A(this.outputFields).collect(function(f){
       return $(f);
@@ -525,6 +525,8 @@ var Calendar = Class.create({
     console.log('date: ' + this.date);
     console.log('dateBackedUp: ' + this.dateBackedUp);
   },
+
+
 
 
   setRange: function(minYear, maxYear) {
