@@ -28,7 +28,8 @@ The differences from the original are
 * Ability to unset the date by clicking on the active date
 * Simple I18n support
 * Removed all ambiguity in the API
-* Positioning of popup calendars is relative to the mouse pointer and can be configured
+* Two strategies in positioning of popup calendars: relative to the popup trigger element (original behavior),
+  and is relative to the mouse pointer (can be configured)
 * Popup calendars  are not created every time they pop up, on the contrary, they are created once just like
   embedded calendars, and then shown or hidden.
 * Possible to have many popup calendars on page. The behavior of the original calendarview when a popup
@@ -68,6 +69,7 @@ var Calendar = Class.create({
     this.hideOnClickOnDay          = params.hideOnClickOnDay      || false;
     this.hideOnClickElsewhere      = params.hideOnClickElsewhere  || false;
     this.outputFields              = params.outputFields          || $A();
+    this.popupPositioningStrategy  = params.popupPositioningStrategy || 'trigger'; // or 'pointer'
     this.x = params.x || 0;
     this.y = params.y || 0.6;
 
@@ -107,7 +109,9 @@ var Calendar = Class.create({
       var popupTriggerElement = $(popupTriggerElement);
       popupTriggerElement._calendar = this;
 
-      popupTriggerElement.observe('click', this.showAtElement.bind(this) );
+      popupTriggerElement.observe('click', function(event){
+        this.showAtElement(event, popupTriggerElement);
+      }.bind(this) );
 
     } else{ // In-Page Calendar
       this.show();
@@ -439,12 +443,20 @@ var Calendar = Class.create({
   },
 
 
-
-  showAtElement: function(e) {
+  showAtElement: function(event, element) {
     this.container.show();
-    var pos = Event.pointer(e);
-    var containerWidth = this.container.getWidth();
-    this.showAt(pos.x + (containerWidth * this.x), pos.y + (containerWidth * this.y));
+    var x, y;
+    if (this.popupPositioningStrategy == 'pointer'){ // follow the mouse pointer
+      var pos = Event.pointer(event);
+      var containerWidth = this.container.getWidth();
+      x = containerWidth * this.x + pos.x;
+      y = containerWidth * this.y + pos.y;
+    }else{ // 'container' - container of the trigger elements
+      var pos = Position.cumulativeOffset(element);
+      x = pos[0];
+      y = this.container.offsetHeight * 0.75 + pos[1];
+    }
+    this.showAt(x, y);
   },
 
   hide: function() {
