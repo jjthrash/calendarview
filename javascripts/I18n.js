@@ -91,6 +91,52 @@ Calendar.messagebundle = $H({'en' :
 
       'today' : 'aujourd\'hui'
     }),
+  'pt' :
+    $H({
+      'monday' : 'Segunda-feira', 
+      'tuesday' : 'Terça-feira', 
+      'wednesday' : 'Quarta-feira', 
+      'thursday' : 'Quinta-feira', 
+      'friday' : 'Sexta-feira', 
+      'saturday' : 'Sabado',
+      'sunday' : 'Domingo',
+
+      'monday_short' : 'Seg', 
+      'tuesday_short' : 'Ter', 
+      'wednesday_short' : 'Qua', 
+      'thursday_short' : 'Qui', 
+      'friday_short' : 'Sex', 
+      'saturday_short' : 'Sab',
+      'sunday_short' : 'Dom',
+
+      'january' : 'Janeiro', 
+      'february' : 'Fevereiro', 
+      'march' : 'Março', 
+      'april' : 'Abril', 
+      'may' : 'Maio', 
+      'june' : 'Junho', 
+      'july'  : 'Julho', 
+      'august' : 'Agosto',
+      'september'  : 'Setembro', 
+      'october' : 'Outubro', 
+      'november' : 'Novembro', 
+      'december' : 'Dezembro',
+
+      'january_short' : 'Jan', 
+      'february_short' : 'Fev', 
+      'march_short' : 'Mar', 
+      'april_short' : 'Abr', 
+      'may_short' : 'Mai', 
+      'june_short' : 'Jun', 
+      'july_short'  : 'Jul', 
+      'august_short' : 'Ago',
+      'september_short'  : 'Set', 
+      'october_short' : 'Out', 
+      'november_short' : 'Nov', 
+      'december_short' : 'Dez',
+
+      'today' : 'hoje'
+    }),
   'ru' :
     $H({
       'monday' : 'Понедельник', 
