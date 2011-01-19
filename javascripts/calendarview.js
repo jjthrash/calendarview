@@ -70,6 +70,11 @@ var Calendar = Class.create({
     this.hideOnClickElsewhere      = params.hideOnClickElsewhere  || false;
     this.outputFields              = params.outputFields          || $A();
     this.popupPositioningStrategy  = params.popupPositioningStrategy || 'trigger'; // or 'pointer'
+    if (typeof params.deselectIfClickSelectedDate == 'undefined')
+      this.deselectIfClickSelectedDate = true;
+    else
+      this.deselectIfClickSelectedDate = params.deselectIfClickSelectedDate;
+
     this.x = params.x || 0;
     this.y = params.y || 0.6;
 
@@ -851,7 +856,7 @@ Calendar.handleMouseUpEvent = function(event){
     if (calendar.currentDateElement) {
       Element.removeClassName(calendar.currentDateElement, 'selected');
 
-      if (dateWasDefined && el == calendar.currentDateElement){
+      if (calendar.deselectIfClickSelectedDate && dateWasDefined && el == calendar.currentDateElement){
         calendar.backupDateAndCurrentElement();
 
         calendar.updateOuterField();
@@ -862,7 +867,7 @@ Calendar.handleMouseUpEvent = function(event){
 
       Element.addClassName(el, 'selected');
 
-      calendar.shouldClose = (calendar.currentDateElement == el);
+      calendar.shouldClose = (!calendar.deselectIfClickSelectedDate || calendar.currentDateElement == el);
 
       if (!calendar.shouldClose) {
 
